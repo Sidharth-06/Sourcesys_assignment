@@ -3,18 +3,19 @@ Machine Learning Models Training
 Trains Random Forest, Linear Regression, and Logistic Regression models using the Iris dataset
 """
 
-import pandas as pd
+from pathlib import Path
+
+import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
+import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score, f1_score,
     confusion_matrix, classification_report, mean_squared_error, r2_score
 )
-import matplotlib.pyplot as plt
-import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 
 class MLModelsTrainer:
@@ -22,7 +23,8 @@ class MLModelsTrainer:
     
     def __init__(self, dataset_path):
         """Initialize with dataset path"""
-        self.dataset_path = dataset_path
+        self.dataset_path = Path(dataset_path)
+        self.base_dir = Path(__file__).resolve().parent
         self.df = None
         self.X_train = None
         self.X_test = None
@@ -37,6 +39,14 @@ class MLModelsTrainer:
         print("=" * 70)
         print("LOADING DATA")
         print("=" * 70)
+
+        if not self.dataset_path.exists():
+            fallback_path = self.base_dir / "15-04-26" / "data" / "iris.csv"
+            if fallback_path.exists():
+                self.dataset_path = fallback_path
+
+        if not self.dataset_path.exists():
+            raise FileNotFoundError(f"Dataset not found: {self.dataset_path}")
         
         # Column names for iris dataset
         columns = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'species']
@@ -44,7 +54,8 @@ class MLModelsTrainer:
         
         print(f"\nDataset shape: {self.df.shape}")
         print(f"\nFirst few rows:\n{self.df.head()}")
-        print(f"\nDataset info:\n{self.df.info()}")
+        print("\nDataset info:")
+        self.df.info()
         print(f"\nBasic statistics:\n{self.df.describe()}")
         print(f"\nClass distribution:\n{self.df['species'].value_counts()}")
         
@@ -55,7 +66,7 @@ class MLModelsTrainer:
         print("=" * 70)
         
         # Encode species to numeric values
-        species_mapping = {species: idx for idx, species in enumerate(self.df['species'].unique())}
+        species_mapping = {species: idx for idx, species in enumerate(sorted(self.df['species'].unique()))}
         print(f"\nSpecies mapping: {species_mapping}")
         
         X = self.df.drop('species', axis=1)
@@ -123,7 +134,7 @@ class MLModelsTrainer:
         print("TRAINING LOGISTIC REGRESSION")
         print("=" * 70)
         
-        lr_model = LogisticRegression(max_iter=1000, random_state=42, multi_class='multinomial')
+        lr_model = LogisticRegression(max_iter=1000, random_state=42)
         lr_model.fit(self.X_train, self.y_train)
         
         self.models['Logistic Regression'] = lr_model
@@ -263,8 +274,9 @@ class MLModelsTrainer:
             axes[1, 1].text(i, v + 0.01, f'{v:.4f}', ha='center')
         
         plt.tight_layout()
-        plt.savefig('e:\\Souresys\\python_programs\\ml_models_comparison.png', dpi=300, bbox_inches='tight')
-        print("\nVisualization saved as 'ml_models_comparison.png'")
+        output_path = self.base_dir / 'ml_models_comparison.png'
+        plt.savefig(output_path, dpi=300, bbox_inches='tight')
+        print(f"\nVisualization saved as '{output_path.name}'")
         plt.show()
         
     def run_all(self):
@@ -284,7 +296,7 @@ class MLModelsTrainer:
 
 if __name__ == "__main__":
     # Path to iris dataset
-    dataset_path = 'python_programs/15-04-26/data/iris.csv'
+    dataset_path = Path(__file__).resolve().parent / '15-04-26' / 'data' / 'iris.csv'
     
     # Create trainer and run all models
     trainer = MLModelsTrainer(dataset_path)
