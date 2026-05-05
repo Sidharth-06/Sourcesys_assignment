@@ -1,82 +1,88 @@
-# Streamlit Full User Form with Cloud DB Save
+# Streamlit Support Ticket System
 
-This project creates a Streamlit user form using core input widgets and saves submitted data to a cloud database:
+A clean Streamlit app for submitting support tickets and saving them directly to Appwrite.
 
-- MongoDB Atlas
-- Appwrite
+## Features
 
-## 1) Setup
+- Native Streamlit form with a dark UI
+- Contact details, issue classification, priority, and resolution preferences
+- File uploads for screenshots, logs, and supporting documents
+- Appwrite-only persistence using the Python SDK
+- Ticket preview before submission
 
-### Prerequisites
+## Project Structure
 
-- Python 3.10+
-- A MongoDB Atlas cluster OR an Appwrite Cloud project
+- `app.py` - main Streamlit application
+- `requirements.txt` - Python dependencies
+- `.env.example` - sample Appwrite configuration
+- `appwrite.config.json` - Appwrite CLI configuration
 
-### Install
+## Setup
+
+### 1. Install dependencies
 
 ```powershell
-pip install -r requirements.txt
+py -3.10 -m pip install -r requirements.txt
 ```
 
-### Configure environment
+### 2. Configure Appwrite credentials
 
-Copy `.env.example` to `.env` and fill the values for the backend you plan to use.
+Copy the sample environment file and fill in your Appwrite values:
 
 ```powershell
 Copy-Item .env.example .env
 ```
 
-## 2) Run app
+You can also use Streamlit secrets instead of `.env` by creating `.streamlit/secrets.toml`:
+
+```toml
+[appwrite]
+endpoint = "https://fra.cloud.appwrite.io/v1"
+project_id = "YOUR_PROJECT_ID"
+api_key = "YOUR_API_KEY"
+database_id = "YOUR_DATABASE_ID"
+collection_id = "YOUR_COLLECTION_ID"
+```
+
+## Run
 
 ```powershell
 streamlit run app.py
 ```
 
-## 3) MongoDB Atlas notes
+If you want to make the app reachable on your local network, use:
 
-Use these variables in `.env`:
+```powershell
+streamlit run app.py --server.address 0.0.0.0 --server.port 8501
+```
 
-- `MONGODB_URI`
-- `MONGODB_DB_NAME`
-- `MONGODB_COLLECTION_NAME`
+## Appwrite Requirements
 
-Ensure your Atlas network access and DB user permissions allow insert operations.
+Make sure the Appwrite collection or table has fields that match the ticket payload. The app stores:
 
-## 4) Appwrite notes
+- `submitted_at`
+- `full_name`
+- `email`
+- `phone`
+- `company`
+- `ticket_type`
+- `priority`
+- `category`
+- `date_issue_started`
+- `subject`
+- `description`
+- `impact_level`
+- `affected_systems`
+- `can_reproduce`
+- `preferred_contact_method`
+- `urgency`
+- `subscribe_updates`
+- `agree_followup`
+- `error_log`
+- `additional_files`
 
-Use these variables in `.env`:
+## Notes
 
-- `APPWRITE_ENDPOINT`
-- `APPWRITE_PROJECT_ID`
-- `APPWRITE_API_KEY`
-- `APPWRITE_DATABASE_ID`
-- `APPWRITE_COLLECTION_ID`
-
-Also ensure:
-
-- The collection has attributes that match the submitted data schema you want to store.
-- The API key has database write permissions.
-
-## 5) What the app captures
-
-The form includes many Streamlit inputs such as:
-
-- text input
-- password input
-- text area
-- number input
-- date input
-- time input
-- radio
-- selectbox
-- multiselect
-- slider
-- select slider
-- color picker
-- checkbox
-- toggle
-- file uploader (single and multiple)
-- camera input
-- data editor
-
-On submit, the app stores the form payload in your selected cloud backend.
+- The app uses Appwrite SDK calls only.
+- If you change the Appwrite schema, update the database/table attributes accordingly.
+- The form is designed to be practical for helpdesk or internal support use.
