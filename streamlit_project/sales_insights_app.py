@@ -66,36 +66,6 @@ st.markdown(
 )
 
 
-def build_sample_data() -> pd.DataFrame:
-    base_date = datetime.utcnow().date() - timedelta(days=20)
-    regions = ["North", "South", "East", "West"]
-    products = ["Starter", "Growth", "Pro", "Enterprise"]
-    channels = ["Direct", "Online", "Partner"]
-
-    records = []
-    for day in range(21):
-        for index, region in enumerate(regions):
-            quantity = 8 + day + index
-            unit_price = 45 + index * 12 + day * 1.8
-            sales = round(quantity * unit_price, 2)
-            cost = round(sales * (0.58 - index * 0.03), 2)
-            records.append(
-                {
-                    "order_date": base_date + timedelta(days=day),
-                    "region": region,
-                    "product": products[(day + index) % len(products)],
-                    "channel": channels[(day + index) % len(channels)],
-                    "quantity": quantity,
-                    "unit_price": round(unit_price, 2),
-                    "sales": sales,
-                    "cost": cost,
-                    "profit": round(sales - cost, 2),
-                }
-            )
-
-    return pd.DataFrame(records)
-
-
 def read_uploaded_file(uploaded_file) -> pd.DataFrame:
     file_name = uploaded_file.name.lower()
     if file_name.endswith(".csv"):
