@@ -14,6 +14,7 @@ A clean Streamlit app for submitting support tickets and saving them directly to
 
 - `app.py` - main Streamlit application
 - `data_viz_app.py` - Streamlit dashboard for visualizing uploaded data
+- `sales_insights_app.py` - Streamlit sales upload, cleaning, insights, and download app
 - `requirements.txt` - Python dependencies
 - `.env.example` - sample Appwrite configuration
 - `appwrite.config.json` - Appwrite CLI configuration
@@ -55,6 +56,12 @@ To open the visualization dashboard instead, run:
 
 ```powershell
 streamlit run data_viz_app.py
+```
+
+To open the sales insights app, run:
+
+```powershell
+streamlit run sales_insights_app.py
 ```
 
 If you want to make the app reachable on your local network, use:
