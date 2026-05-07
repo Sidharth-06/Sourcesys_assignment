@@ -292,7 +292,7 @@ with st.sidebar:
     max_rows = st.slider("Rows to preview", min_value=50, max_value=5000, value=1000, step=50)
 
 processed_data, context = enrich_sales_data(raw_data)
-processed_data = processed_data.head(max_rows).copy()
+preview_data = processed_data.head(max_rows).copy()
 
 sales_column = context["sales_column"]
 profit_column = context["profit_column"]
